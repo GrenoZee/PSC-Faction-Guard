@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 11, 2017 at 01:26 PM
+-- Generation Time: Oct 12, 2017 at 05:53 PM
 -- Server version: 5.6.35
 -- PHP Version: 5.5.38
 
@@ -15,6 +15,19 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `faction_guard` DEFAULT CHARACTER SET utf16 COLLATE utf16_unicode_ci;
 USE `faction_guard`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `APISession`
+--
+
+CREATE TABLE `APISession` (
+  `ID` int(10) UNSIGNED NOT NULL,
+  `User_ID` int(10) UNSIGNED NOT NULL COMMENT 'Foreign key to the user',
+  `Token` varchar(36) COLLATE utf16_unicode_ci NOT NULL,
+  `Expiry` int(10) UNSIGNED NOT NULL COMMENT 'Unix timestamp of the token expiry'
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -57,6 +70,14 @@ CREATE TABLE `User` (
 --
 
 --
+-- Indexes for table `APISession`
+--
+ALTER TABLE `APISession`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `IX_APISession_Token_Unique` (`Token`),
+  ADD KEY `IX_APISession_Expiry` (`Expiry`);
+
+--
 -- Indexes for table `Commander`
 --
 ALTER TABLE `Commander`
@@ -81,6 +102,11 @@ ALTER TABLE `User`
 -- AUTO_INCREMENT for dumped tables
 --
 
+--
+-- AUTO_INCREMENT for table `APISession`
+--
+ALTER TABLE `APISession`
+  MODIFY `ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `Commander`
 --
