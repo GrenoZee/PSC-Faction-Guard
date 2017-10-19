@@ -1,14 +1,13 @@
 <?php
-include_once '../../private/api/init_api.php';
-
+//====================
 class CFacGuard {
 	protected
 		$arrResponse
-		, $objDB;
+		, $objDB
+	    ;
 
-	//--------------------
-	public function __construct() {
-		//TODO - Set $objDB to database connection and login
+    //--------------------
+	protected function DBConnect() {
 		try {
 			$this->objDB = new PDO(
 					"mysql:host=" . FG_DB_SERVER . ";dbname=" . FG_DB_NAME
@@ -20,22 +19,24 @@ class CFacGuard {
 					, PDO::ERRMODE_EXCEPTION
 					);
 		} catch (PDOException $objException) {
-		    $this->SetError(
+		    throw new CFGException(
 		            FG_ERR_DB_CONNECTION_FAILED
+		            , ''
 		            , $objException
-		            , TRUE
 		            );
 		}
 	}
 	
 	//--------------------
 	public function GetMissionList($strRequest) {
-		$objRequest = $this->ParseRequest($strRequest);
+		$this->DBConnect();
+	    $objRequest = $this->ParseRequest($strRequest);
 	}
 
 	//--------------------
 	public function Login($strRequest) {
-		$objRequest = $this->ParseRequest($strRequest);
+	    $this->DBConnect();
+	    $objRequest = $this->ParseRequest($strRequest);
 	}
 
 	//--------------------
@@ -51,18 +52,16 @@ class CFacGuard {
 		            json_last_error_msg()
 		            , json_last_error()
 		            );
-		    $this->SetError(
+		    throw new CFGException(
 		        FG_ERR_API_REQUEST_PARSING_ERROR
+                , ''
 		        , $objException
-		        , TRUE
 		        );
 		}
 		    
 		if (!isset($objRequest->accessToken)) {
-		    $this->SetError(
+		    throw new CFGException(
 		            FG_ERR_API_NO_ACCESS_TOKEN
-		            , NULL
-		            , TRUE
 		            );
 		}
 		
@@ -75,35 +74,5 @@ class CFacGuard {
 		        . ' Expiry > ' . time
 		    ;
 		$this->objDB->prepare($strSQL);
-	}
-
-	//--------------------
-	protected function SetError(
-			$intFGErrorCode = FG_ERR_NONE
-			, $objException = NULL
-            , $blnClose = FALSE
-            ) {
-		$this->arrResponse['error']['code'] = $intFGErrorCode;
-		$this->arrResponse['error']['message'] = FG_ERRORS[$intFGErrorCode];
-
-		if (isset($objException)) {
-			$this->arrResponse['error']['exceptionCode'] = $objException->getCode;
-			$this->arrResponse['error']['exceptionMessage'] = $objException->getMessage;
-			$this->arrResponse['error']['exceptionFile'] = $objException->getFile;
-			$this->arrResponse['error']['exceptionLine'] = $objException->getLine;
-		}
-		
-		if ($blnClose) {
-		    $this->WriteResponse();
-		    throw new CExit();
-		}
-	}
-
-	//--------------------
-	protected function WriteResponse() {
-	    if (!isset($this->arrResponse['error']['code'])) 
-			$this->SetError(FG_ERR_NONE);
-			
-		echo json_encode($this->arrResponse);
 	}
 }
