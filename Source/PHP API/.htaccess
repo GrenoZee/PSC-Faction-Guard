@@ -10,10 +10,11 @@ RewriteBase /
 ## Forbid Access
 ##RewriteRule .* - [F,NS,L] 
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^/api/([^/]+)/([^/]+)$ /api/index.php?module=$1&command=$2 [NC,L]
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*)/(.*)/(.*)/(.)?$ /api/index.php?module=$1&command=$2&p1=$3 [NC,L]
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^/api/([^/]+)/([^/]+)/([^/]+)$ /api/index.php?module=$1&command=$2&p1=$3 [NC,L]
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*)/(.*)/(.)?$ /api/index.php?module=$1&command=$2 [NC,L]
+

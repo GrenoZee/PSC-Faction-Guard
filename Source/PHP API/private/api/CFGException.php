@@ -1,20 +1,4 @@
 <?php
-
-//====================
-// ERROR CONSTANTS
-// No error
-const FG_ERR_NONE = 0;
-
-// Unknown errors
-const FG_ERR_UNKNOWN = 1;
-
-// API Calls errors
-const FG_ERR_API_REQUEST_PARSING_ERROR = 1000;
-const FG_ERR_API_NO_ACCESS_TOKEN = 1001;
-
-// DB Errors
-const FG_ERR_DB_CONNECTION_FAILED = 2000;
-
 //====================
 class CFGException extends Exception {
     static protected $arrMessages = array (
@@ -54,10 +38,10 @@ class CFGException extends Exception {
         $objPrevious = $this->getPrevious();
         
         if (isset($objPrevious)) {
-            $arrResponse['error']['previousCode'] = $objPrevious->getCode;
-            $arrResponse['error']['previousMessage'] = $objPrevious->getMessage;
-            $arrResponse['error']['previousFile'] = $objPrevious->getFile;
-            $arrResponse['error']['previousLine'] = $objPrevious->getLine;
+            $arrResponse['error']['exceptionCode'] = $objPrevious->getCode();
+            $arrResponse['error']['exceptionMessage'] = $objPrevious->getMessage();
+            $arrResponse['error']['exceptionFile'] = $objPrevious->getFile();
+            $arrResponse['error']['exceptionLine'] = $objPrevious->getLine();
         }
         
         $objResponse = new CResponse($arrResponse);

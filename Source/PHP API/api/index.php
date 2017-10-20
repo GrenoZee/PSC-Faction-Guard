@@ -1,5 +1,5 @@
 <?php
-require_once '../../private/api/init_api.php';
+require_once '../private/api/init_api.php';
 
 try {
     $objFacGuard = new CFacGuard();

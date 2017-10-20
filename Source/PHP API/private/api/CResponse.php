@@ -1,11 +1,4 @@
 <?php
-require_once 'private/constants.php';
-
-const
-    FG_RESPONSE_JSON = 'json'
-    , FG_RESPONSE_HTML = 'html'
-    ;
-
 //====================
 class CResponse {
     protected
@@ -28,7 +21,7 @@ class CResponse {
         
         if ($this->enuType == FG_RESPONSE_JSON) {
             header("Content-Type: application/json; charset=UTF-8");
-            echo json_encode($arrResponse);
+            echo json_encode($this->arrResponse);
         }
         elseif ($this->enuType == FG_RESPONSE_HTML) {
             header("Content-Type: text/html; charset=utf-8");
