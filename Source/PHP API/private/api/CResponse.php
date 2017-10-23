@@ -4,13 +4,19 @@ class CResponse {
     protected
         $arrResponse
         , $enuType
+        , $enuMethod
         ;
 
     //--------------------
-    public function __construct($arrResponse) {
+    public function __construct($arrResponse = NULL) {
         $this->arrResponse = $arrResponse;
+        $this->enuMethod = $_SERVER['REQUEST_METHOD'];
         
-        if (!isset($this->arrResponse['code']))
+        if (
+                isset($this->arrResponse)
+                 &&
+                !isset($this->arrResponse['code'])
+                )
             $this->arrResponse['code'] = FG_ERR_NONE;
     }
         
