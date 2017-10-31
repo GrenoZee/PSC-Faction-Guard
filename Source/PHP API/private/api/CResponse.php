@@ -1,4 +1,6 @@
 <?php
+include_once 'init_api.php';
+
 //====================
 class CResponse {
     protected

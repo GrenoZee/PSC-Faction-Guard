@@ -1,4 +1,6 @@
 <?php
+include_once 'init_api.php';
+
 //====================
 class CFacGuard {
 	protected
@@ -18,7 +20,9 @@ class CFacGuard {
 					PDO::ATTR_ERRMODE
 					, PDO::ERRMODE_EXCEPTION
 					);
-		} catch (PDOException $objException) {
+		}
+		
+		catch (PDOException $objException) {
 		    throw new CFGException(
 		            FG_ERR_DB_CONNECTION_FAILED
 		            , ''
@@ -36,6 +40,8 @@ class CFacGuard {
 	//--------------------
 	public function Login($strRequest) {
 	    $this->DBConnect();
+	    $objUserCredentials = new CUserCredentials($this->objDBO);
+	    
 	    $objRequest = $this->ParseRequest($strRequest);
 	}
 
