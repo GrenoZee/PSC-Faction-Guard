@@ -6,8 +6,16 @@ class CFacGuard {
 	protected
 		$arrResponse
 		, $objDB
+		, $objOAuth2Server
+		, $objOAuth2Storage
 	    ;
 
+	//--------------------
+	public function __construct() {
+	    $this->DBConnect();
+	    $this->InitOAuth();
+	}
+	    
     //--------------------
 	protected function DBConnect() {
 		try {
@@ -33,16 +41,22 @@ class CFacGuard {
 	
 	//--------------------
 	public function GetMissionList($strRequest) {
-		$this->DBConnect();
 	    $objRequest = $this->ParseRequest($strRequest);
+	}
+	
+	//--------------------
+	protected function InitOAuth () {
+	    if (isset($this->objDB)) {
+        	    $this->objOAuth2Storage = new CPDOStorage($this->objDB);
+	        $this->objOAuth2Server = new OAuth2\Server($this->objOAuth2Storage);
+	    }
 	}
 
 	//--------------------
-	public function Login($strRequest) {
-	    $this->DBConnect();
-	    $objUserCredentials = new CUserCredentials($this->objDBO);
-	    
+	public function Login() {
+	    $this->objOAuth2Server->addGrantType(new OAuth2\GrantType\ClientCredentials($this->objOAuth2Storage));
 	    $objRequest = $this->ParseRequest($strRequest);
+	    $this->objOAuth2Server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
 	}
 
 	//--------------------

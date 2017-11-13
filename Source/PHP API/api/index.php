@@ -8,7 +8,7 @@ try {
         case 'auth':
             switch ($_REQUEST['command']) {
                 case 'login':
-                    $arrResponse = $objFacGuard->Login(file_get_contents("php://input"));
+                    $arrResponse = $objFacGuard->Login();
                     break;
                     
                 default:
