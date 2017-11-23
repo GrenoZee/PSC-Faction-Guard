@@ -2,7 +2,7 @@
 include_once 'init_api.php';
 
 //====================
-class CFacGuard {
+class CApi {
 	protected
 		$arrResponse
 		, $objDB

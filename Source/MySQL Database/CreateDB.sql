@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
+-- version 4.7.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 23, 2017 at 01:17 PM
+-- Generation Time: Nov 23, 2017 at 12:40 PM
 -- Server version: 5.6.35
--- PHP Version: 7.1.1
+-- PHP Version: 7.0.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -13,6 +13,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `faction_guard`
 --
+CREATE DATABASE IF NOT EXISTS `faction_guard` DEFAULT CHARACTER SET utf16 COLLATE utf16_unicode_ci;
+USE `faction_guard`;
 
 -- --------------------------------------------------------
 
@@ -35,8 +37,9 @@ CREATE TABLE `APISession` (
 
 CREATE TABLE `Commander` (
   `ID` int(10) UNSIGNED NOT NULL,
-  `Name` varchar(50) COLLATE utf16_unicode_ci NOT NULL,
-  `Group_ID` int(10) UNSIGNED NOT NULL
+  `Group_ID` int(10) UNSIGNED NOT NULL,
+  `User_ID` int(10) UNSIGNED NOT NULL,
+  `Name` varchar(50) COLLATE utf16_unicode_ci NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
@@ -62,7 +65,7 @@ CREATE TABLE `oauth_access_tokens` (
   `user_id` varchar(80) COLLATE utf16_unicode_ci DEFAULT NULL,
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `scope` varchar(4000) COLLATE utf16_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -78,7 +81,7 @@ CREATE TABLE `oauth_authorization_codes` (
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `scope` varchar(4000) COLLATE utf16_unicode_ci DEFAULT NULL,
   `id_token` varchar(1000) COLLATE utf16_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -93,7 +96,7 @@ CREATE TABLE `oauth_clients` (
   `grant_types` varchar(80) COLLATE utf16_unicode_ci DEFAULT NULL,
   `scope` varchar(4000) COLLATE utf16_unicode_ci DEFAULT NULL,
   `user_id` varchar(80) COLLATE utf16_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -105,7 +108,7 @@ CREATE TABLE `oauth_jwt` (
   `client_id` varchar(80) COLLATE utf16_unicode_ci NOT NULL,
   `subject` varchar(80) COLLATE utf16_unicode_ci DEFAULT NULL,
   `public_key` varchar(2000) COLLATE utf16_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -119,7 +122,7 @@ CREATE TABLE `oauth_refresh_tokens` (
   `user_id` varchar(80) COLLATE utf16_unicode_ci DEFAULT NULL,
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `scope` varchar(4000) COLLATE utf16_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -130,7 +133,7 @@ CREATE TABLE `oauth_refresh_tokens` (
 CREATE TABLE `oauth_scopes` (
   `scope` varchar(80) COLLATE utf16_unicode_ci NOT NULL,
   `is_default` tinyint(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -146,7 +149,7 @@ CREATE TABLE `oauth_users` (
   `email` varchar(80) COLLATE utf16_unicode_ci DEFAULT NULL,
   `email_verified` tinyint(1) DEFAULT NULL,
   `scope` varchar(4000) COLLATE utf16_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -157,9 +160,40 @@ CREATE TABLE `oauth_users` (
 CREATE TABLE `User` (
   `ID` int(10) UNSIGNED NOT NULL,
   `Username` varchar(50) COLLATE utf16_unicode_ci NOT NULL,
-  `PasswordHash` varchar(100) COLLATE utf16_unicode_ci NOT NULL,
-  `Commander_ID` int(10) UNSIGNED NOT NULL
+  `PasswordHash` varchar(255) CHARACTER SET utf16 DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `UserRole`
+--
+
+CREATE TABLE `UserRole` (
+  `ID` int(10) UNSIGNED NOT NULL,
+  `Name` varchar(45) COLLATE utf16_unicode_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `user_commander_all`
+-- (See below for the actual view)
+--
+CREATE TABLE `user_commander_all` (
+`CommanderName` varchar(50)
+,`Username` varchar(50)
+,`PasswordHash` varchar(255)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `user_commander_all`
+--
+DROP TABLE IF EXISTS `user_commander_all`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `user_commander_all`  AS  select `commander`.`Name` AS `CommanderName`,`user`.`Username` AS `Username`,`user`.`PasswordHash` AS `PasswordHash` from (`user` left join `commander` on((`user`.`ID` = `commander`.`User_ID`))) ;
 
 --
 -- Indexes for dumped tables
@@ -178,7 +212,8 @@ ALTER TABLE `APISession`
 --
 ALTER TABLE `Commander`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `IX_Commander_Name_Unique` (`Name`) USING BTREE;
+  ADD UNIQUE KEY `IX_Commander_Name_Unique` (`Name`) USING BTREE,
+  ADD KEY `IX_Commander_User_ID` (`User_ID`);
 
 --
 -- Indexes for table `CommanderGroup`
@@ -225,6 +260,13 @@ ALTER TABLE `User`
   ADD UNIQUE KEY `IX_User_Username_Unique` (`Username`) USING BTREE;
 
 --
+-- Indexes for table `UserRole`
+--
+ALTER TABLE `UserRole`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `ID_UNIQUE` (`ID`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -247,4 +289,9 @@ ALTER TABLE `CommanderGroup`
 -- AUTO_INCREMENT for table `User`
 --
 ALTER TABLE `User`
+  MODIFY `ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `UserRole`
+--
+ALTER TABLE `UserRole`
   MODIFY `ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
